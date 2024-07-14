@@ -98,6 +98,28 @@ def build_model():
     
     return model
 
+def tuning_model(pipeline, x_train, y_train):
+    """Tune the hyperparameters of the machine learning pipeline using GridSearchCV.
+
+    Parameters:
+        pipeline (sklearn.pipeline.Pipeline): The machine learning pipeline to be tuned.
+        x_train (pd.Series or np.ndarray): The training input data (messages).
+        y_train (pd.DataFrame or np.ndarray): The true labels for the training data.
+
+    Returns:
+        GridSearchCV: The GridSearchCV object after fitting it to the training data."""
+    parameters = {
+        'clf__estimator__n_estimators': [20, 40],
+        'clf__estimator__min_samples_split': [2, 4]
+    }
+
+    cv = GridSearchCV(pipeline, param_grid=parameters)
+    cv.fit(x_train, y_train)
+    
+    # Display best parameters
+    print("Best parameters: ", cv.best_params_)
+    
+    return cv
 
 def evaluate_model(model, X_test, Y_test, category_names):
     """Evaluate the performance of the machine learning model.
@@ -148,7 +170,7 @@ def main():
     1. Loads data from the SQLite database specified by the first command-line argument.
     2. Splits the data into training and test sets.
     3. Builds a machine learning model.
-    4. Trains the model on the training set.
+    4. Trains and fine-tuning model on the training set.
     5. Evaluates the model on the test set.
     6. Saves the trained model to a pickle file specified by the second command-line argument.
 
@@ -170,14 +192,17 @@ def main():
         print('Building model...')
         model = build_model()
         
-        print('Training model...')
-        model.fit(X_train, Y_train)
+        print('Fine-tuning model ...')
+        best_model = tuning_model(model, X_train, Y_train)
+        
+#         print('Training model...')
+#         model.fit(X_train, Y_train)
         
         print('Evaluating model...')
-        evaluate_model(model, X_test, Y_test, category_names)
+        evaluate_model(best_model, X_test, Y_test, category_names)
 
         print('Saving model...\n    MODEL: {}'.format(model_filepath))
-        save_model(model, model_filepath)
+        save_model(best_model, model_filepath)
 
         print('Trained model saved!')
 

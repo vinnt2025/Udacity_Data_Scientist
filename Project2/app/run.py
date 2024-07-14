@@ -65,6 +65,9 @@ def index():
     category_pct = Y.mean().sort_values(ascending= False)
     category = category_pct.index.str.replace('_', ' ')
     
+    # Data for message counts by genre
+    message_counts_by_genre = df.groupby('genre').count()['message']
+    
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
     graphs = [
@@ -103,6 +106,19 @@ def index():
                     't': 100, 
                     'pad': 4 
                 }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=message_counts_by_genre.index,
+                    y=message_counts_by_genre.values
+                )
+            ],
+            'layout': {
+                'title': 'Distribution of Messages by Genre',
+                'xaxis': {'title': 'Genre'},
+                'yaxis': {'title': 'Number of Messages'}
             }
         }
     ]
