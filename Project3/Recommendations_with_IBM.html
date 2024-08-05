@@ -13412,7 +13412,7 @@ Name: article_id, dtype: int64</pre>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;matplotlib.axes._subplots.AxesSubplot at 0x785ca7f60c50&gt;</pre>
+<pre>&lt;matplotlib.axes._subplots.AxesSubplot at 0x7a65e7941198&gt;</pre>
 </div>
 
 </div>
@@ -15677,24 +15677,33 @@ The 3 most similar users to user 46 are: [4201, 23, 3782]
     <span class="c1"># Your code here</span>
     <span class="n">recs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
     
+    <span class="c1"># Grouping articles by interaction count</span>
+    <span class="n">article_interactions</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;article_id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()[</span><span class="s1">&#39;user_id&#39;</span><span class="p">]</span>
+
     <span class="c1"># Get list of the article which were seen by a user</span>
     <span class="n">articles_by_user</span> <span class="o">=</span> <span class="n">get_user_articles</span><span class="p">(</span><span class="n">user_id</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    
     <span class="c1"># Get similar users</span>
     <span class="n">similar_users</span> <span class="o">=</span> <span class="n">get_top_sorted_users</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
       
     <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">similar_users</span><span class="p">:</span>
         <span class="c1"># Get list of the article which were seen by similar user</span>
         <span class="n">articles_by_similar_user</span> <span class="o">=</span> <span class="n">get_user_articles</span><span class="p">(</span><span class="n">user</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="c1"># Get article were read by similar user but user not read yet</span>
-        <span class="n">new_recs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">articles_by_similar_user</span><span class="p">,</span> <span class="n">articles_by_user</span><span class="p">,</span> <span class="n">assume_unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> 
-
-        <span class="c1"># Get recommended articles</span>
-        <span class="n">recs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">new_recs</span><span class="p">,</span> <span class="n">recs</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">))</span>  
         
+        <span class="c1"># Get article were read by similar user but user not read yet</span>
+        <span class="n">new_recs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">articles_by_similar_user</span><span class="p">,</span> <span class="n">articles_by_user</span><span class="p">,</span> <span class="n">assume_unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">new_recs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">new_recs</span><span class="p">]</span>
+        
+        <span class="c1"># Sorting recommendations based on article popularity/interaction count</span>
+        <span class="n">top_recs</span> <span class="o">=</span> <span class="n">article_interactions</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">new_recs</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[:</span><span class="n">m</span><span class="p">]</span>
+        
+        <span class="c1"># Get recommended articles</span>
+        <span class="n">recs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">top_recs</span><span class="p">,</span> <span class="n">recs</span><span class="p">],</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+            
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">recs</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">m</span><span class="p">:</span>
             <span class="k">break</span>
-    <span class="n">recs</span> <span class="o">=</span> <span class="n">recs</span><span class="p">[:</span><span class="n">m</span><span class="p">]</span>
-    <span class="n">rec_names</span> <span class="o">=</span> <span class="n">get_article_names</span><span class="p">(</span><span class="n">recs</span><span class="p">)</span>
+            
+    <span class="n">rec_names</span> <span class="o">=</span> <span class="n">get_article_names</span><span class="p">(</span><span class="n">top_recs</span><span class="p">)</span>
     
     <span class="k">return</span> <span class="n">recs</span><span class="p">,</span> <span class="n">rec_names</span>
 </pre></div>
@@ -15733,11 +15742,10 @@ The 3 most similar users to user 46 are: [4201, 23, 3782]
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>The top 10 recommendations for user 20 are the following article ids:
-[&#39;1024.0&#39; &#39;1085.0&#39; &#39;109.0&#39; &#39;1150.0&#39; &#39;1151.0&#39; &#39;1152.0&#39; &#39;1153.0&#39; &#39;1154.0&#39;
- &#39;1157.0&#39; &#39;1160.0&#39;]
+[ 1330.  1427.  1364.  1170.  1162.  1304.  1351.  1160.  1354.  1368.]
 
 The top 10 recommendations for user 20 are the following article names:
-[&#39;using deep learning to reconstruct high-resolution audio&#39;, &#39;airbnb data for analytics: chicago listings&#39;, &#39;tensorflow quick tips&#39;, &#39;airbnb data for analytics: venice calendar&#39;, &#39;airbnb data for analytics: venice listings&#39;, &#39;airbnb data for analytics: venice reviews&#39;, &#39;airbnb data for analytics: vienna calendar&#39;, &#39;airbnb data for analytics: vienna listings&#39;, &#39;airbnb data for analytics: washington d.c. listings&#39;, &#39;analyze accident reports on amazon emr spark&#39;]
+[&#39;insights from new york car accident reports&#39;, &#39;use xgboost, scikit-learn &amp; ibm watson machine learning apis&#39;, &#39;predicting churn with the spss random tree algorithm&#39;, &#39;apache spark lab, part 1: basic concepts&#39;, &#39;analyze energy consumption in buildings&#39;, &#39;gosales transactions for logistic regression model&#39;, &#39;model bike sharing data with spss&#39;, &#39;analyze accident reports on amazon emr spark&#39;, &#39;movie recommender system with spark machine learning&#39;, &#39;putting a human face on machine learning&#39;]
 </pre>
 </div>
 </div>
