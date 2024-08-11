@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Price Prediction</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        function updateMileageUnit() {
+            var fuelType = document.getElementById('Fuel_Type').value;
+            var mileageLabel = document.getElementById('mileageLabel');
+            if (fuelType === 'CNG' || fuelType === 'LPG') {
+                mileageLabel.innerHTML = 'Mileage (km/kg):';
+            } else {
+                mileageLabel.innerHTML = 'Mileage (kmpl):';
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Car Price Prediction</h1>
+        <form action="/predict" method="post" class="mt-4">
+            <div class="form-group">
+                <label for="Year">Year:</label>
+                <input type="text" class="form-control" name="Year" id="Year" required>
+            </div>
+            <div class="form-group">
+                <label for="Kilometers_Driven">Kilometers Driven (km):</label>
+                <input type="text" class="form-control" name="Kilometers_Driven" required>
+            </div>
+            <div class="form-group">
+                <label for="Fuel_Type">Fuel Type:</label>
+                <select class="form-control" name="Fuel_Type" id="Fuel_Type" onchange="updateMileageUnit()" required>
+                    <option value="Petrol">Petrol</option>
+                    <option value="Diesel">Diesel</option>
+                    <option value="CNG">CNG</option>
+                    <option value="LPG">LPG</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Transmission">Transmission:</label>
+                <select class="form-control" name="Transmission" required>
+                    <option value="Manual">Manual</option>
+                    <option value="Automatic">Automatic</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Owner_Type">Owner Type:</label>
+                <select class="form-control" name="Owner_Type" required>
+                    <option value="First">First</option>
+                    <option value="Second">Second</option>
+                    <option value="Third">Third</option>
+                    <option value="Fourth & Above">Fourth & Above</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Mileage" id="mileageLabel">Mileage (kmpl):</label>
+                <input type="text" class="form-control" name="Mileage" required>
+            </div>
+            <div class="form-group">
+                <label for="Engine">Engine (cc):</label>
+                <input type="text" class="form-control" name="Engine" required>
+            </div>
+            <div class="form-group">
+                <label for="Power">Power (bhp):</label>
+                <input type="text" class="form-control" name="Power" required>
+            </div>
+            <div class="form-group">
+                <label for="Seats">Seats:</label>
+                <input type="text" class="form-control" name="Seats" required>
+            </div>
+            <div class="form-group">
+                <label for="Brand">Brand:</label>
+                <select class="form-control" name="Brand" required>
+                    <option value="Maruti">Maruti</option>
+                    <option value="Hyundai">Hyundai</option>
+                    <option value="Honda">Honda</option>
+                    <option value="Toyota">Toyota</option>
+                    <option value="Mercedes-Benz">Mercedes-Benz</option>
+                    <option value="Volkswagen">Volkswagen</option>
+                    <option value="Ford">Ford</option>
+                    <option value="Mahindra">Mahindra</option>
+                    <option value="BMW">BMW</option>
+                    <option value="Audi">Audi</option>
+                    <option value="Tata">Tata</option>
+                    <option value="Skoda">Skoda</option>
+                    <option value="Renault">Renault</option>
+                    <option value="Chevrolet">Chevrolet</option>
+                    <option value="Nissan">Nissan</option>
+                    <option value="Land Rover">Land Rover</option>
+                    <option value="Jaguar">Jaguar</option>
+                    <option value="Fiat">Fiat</option>
+                    <option value="Mitsubishi">Mitsubishi</option>
+                    <option value="Mini Cooper">Mini Cooper</option>
+                    <option value="Volvo">Volvo</option>
+                    <option value="Porsche">Porsche</option>
+                    <option value="Jeep">Jeep</option>
+                    <option value="Datsun">Datsun</option>
+                    <option value="Isuzu">Isuzu</option>
+                    <option value="Force">Force</option>
+                    <option value="Lamborghini">Lamborghini</option>
+                    <option value="Smart">Smart</option>
+                    <option value="Bentley">Bentley</option>
+                    <option value="Ambassador">Ambassador</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Predict</button>
+        </form>
+        <h2 class="mt-4">{{ prediction_text }}</h2>
+    </div>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
